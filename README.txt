@@ -1,1 +1,20 @@
-HereI Write the presentation
+# TDI Capstone Project
+
+## Share the road - Navigation system for cyclist in New York City, based on the safety of a path
+
+This project aims to build a navigation system for cyclists in the city if New York, recommending a path based on the safety of the trajectory. The estimation and the prediction on the safety of a path relies on a safety score that has been built using the number of accidents by street in the city.  For this purpose, I analyzed the data available on the NYC Open database: 
+- the Motor Vehicle Collisions - Crashes dataset (https://data.cityofnewyork.us/Public-Safety/Motor-Vehicle-Collisions-Crashes/h9gi-nx95) gather the accidents reports from 2012 up to the present day
+- the NYC Street Centerline (https://data.cityofnewyork.us/City-Government/NYC-Street-Centerline-CSCL-/exjm-f27b) database provides data of all the street segment in the city (see https://github.com/CityOfNewYork/nyc-geo-metadata/blob/master/Metadata/Metadata_StreetCenterline.md for a complete description of the features) 
+
+In the first notebook (TDI_capstone_Visualization) we gathered the data concerning the crashes, cleaned the data, and performed some preliminary feature engineering. The dataset contains all possible type of accidents (cars, motorcycle, bicycle, pedestrian), we principally focused our work on cyclists, although the other types of accidents might be useful to improve the analysis (this is left as a future development). The concerned notebook contains some useful visualization of the data, especially the data referring to cyclists accidents. Also, a naive the safety (or risk) coefficient is computed, for the only purpose to give an idea of the most dangerous and safe streets.
+
+The idea for the real safety coefficient is the following: for each segment of street in the city, we compute a weighted mean of cyclist injured and killed on that segment, this is the first approximation of the safety coefficient. A lot of segments of streets are missing data, or they do not have any accident on them, this doesn’t mean they implies 0 risk. To compensate to this lack of observations, a machine learning model, based on the characteristic of the street provided by the NYC Street database, has been trained and used to predict a more realistic the safety score for each segment. This process required to merge the informations coming from the accident dataset and the street dataset and is described in the second notebook (TDI_capstone_Geocoding).
+
+The third notebook (TDI_capstone_ML) deal with the machine learning part of the work. The first model we encounter is the above mentioned model that predict the risk coefficient using the physical characteristic of a segment of the street. Notice that the length of the segment is intentionally left out for the moment, since the score aims to be an absolute measure of what portion of the risk a cyclist encounter riding on a segment (that, once taken, is supposed to be covered until its end). 
+As one can expect, the number of accidents in the city has strong seasonalities. To grasp this effects we built a model that takes the time series of the bicycle accidents in the city and predict the a multiplier that represents the rate of accidents that one can expect to happen in that precise period, date and time. This coefficients multiples the previous risk metric and gives us the actual risk/safety coefficient that is meant to be used from the navigation system
+
+A fourth  and final part of the work is being completed. This last step wants to make this work more enjoyable, by building a small web app that visualize the path suggested by the recommendation system, given a destination and a starting point. The intent is to use the Open Street Map API and Python to plot the results and Flask to build the web application. 
+
+As the works goes on, more and more ideas for improving it comes to my mind. Here are some of them:
+- use the data concerning the other type of accidents to better predict the safety score. This data are strongly correlated to the number of bicycle accidents in the city.
+- use the informations we have on the type of accidents (provided by the Motor Vehicle Collisions dataset) to refine the risk measure, involving those additional information in the prediction. 
